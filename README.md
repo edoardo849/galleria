@@ -16,34 +16,14 @@ Apart from bulk image storage and retrieval, ProgImage provides a number of imag
 
 ### Stretch
 
-1. Write a series of microservices for each type of image
-transformation. Coordinate the various services using a
-runtime virtualisation or containerisation technology of
-your choice.
-
-1. Design a language-specific API shim (in the language
-of your choice) for ProgImage as a reusable library (eg
-Ruby Gem, Node Package, etc). The library should
-provide a clean and simple programmatic interface
-that would allow a client back-end application to talk
-to the ProgImage service. The library should be
-idiomatic for the target language
+1. Write a series of microservices for each type of image transformation. Coordinate the various services using a runtime virtualisation or containerisation technology of your choice.
+1. Design a language-specific API shim (in the language of your choice) for ProgImage as a reusable library (eg Ruby Gem, Node Package, etc). The library should provide a clean and simple programmatic interface that would allow a client back-end application to talk to the ProgImage service. The library should be idiomatic for the target language
 
 ## Questions
 
-1. What language platform did you select to implement
-the microservice? Why?
-
+1. What language platform did you select to implement the microservice? Why?
 1. How did you store the uploaded images?
-
-1. What would you do differently to your implementation
-if you had more time?
-
-1. How would coordinate your development environment
-to handle the build and test process?
-
-1. What technologies would you use to ease the task of
-deploying the microservices to a production runtime
-environment?
-
+1. What would you do differently to your implementation if you had more time?
+1. How would coordinate your development environment to handle the build and test process?
+1. What technologies would you use to ease the task of deploying the microservices to a production runtime environment?
 1. What testing did (or would) you do, and why? 
