@@ -1,7 +1,7 @@
 package storage
 
+import (
 	"context"
-	"errors"
 	"log"
 	"os"
 
@@ -9,20 +9,26 @@ package storage
 )
 
 var (
-	DB          ImageDatabase
-	
-	StorageBucket     *gStorage.BucketHandle
+	// DB is the image database
+	DB ImageDatabase
+
+	// StorageBucket holds the handle for the bucket
+	StorageBucket *gStorage.BucketHandle
+
+	// StorageBucketName is the name of the bucket
 	StorageBucketName string
 )
 
 func init() {
-	 DB, err = configureCloudSQL(cloudSQLConfig{
-	 	Username: "root",
-	 	Password: "",
-	 	// The connection name of the Cloud SQL v2 instance, i.e.,
-	 	// "project:region:instance-id"
- 		// Cloud SQL v1 instances are not supported.
-	 	Instance: "",
+	var err error
+
+	DB, err = configureCloudSQL(cloudSQLConfig{
+		Username: "admin",
+		Password: "admin",
+		// The connection name of the Cloud SQL v2 instance, i.e.,
+		// "project:region:instance-id"
+		// Cloud SQL v1 instances are not supported.
+		Instance: "",
 	})
 
 	// TODO create bucket
@@ -47,8 +53,8 @@ type cloudSQLConfig struct {
 	Username, Password, Instance string
 }
 
-func configureCloudSQL(config cloudSQLConfig) (BookDatabase, error) {
-	
+func configureCloudSQL(config cloudSQLConfig) (ImageDatabase, error) {
+
 	if os.Getenv("GAE_INSTANCE") != "" {
 		// Running in production.
 		return newMySQLDB(MySQLConfig{

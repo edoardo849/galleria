@@ -1,4 +1,5 @@
 package storage
+
 //https://github.com/GoogleCloudPlatform/golang-samples/blob/master/getting-started/bookshelf/db_mysql.go
 import (
 	"database/sql"
@@ -13,10 +14,11 @@ var createTableStatements = []string{
 	`CREATE DATABASE IF NOT EXISTS gallery DEFAULT CHARACTER SET = 'utf8' DEFAULT COLLATE 'utf8_general_ci';`,
 	`USE gallery;`,
 	`CREATE TABLE IF NOT EXISTS images (
-		id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-		title VARCHAR(255) NULL,
-		url VARCHAR(255) NULL,
+		id CHAR(40),
+		url VARCHAR(255) NOT NULL,
 		description TEXT NULL,
+		title VARCHAR(255) NULL,
+		format CHAR(3) NOT NULL,
 		PRIMARY KEY (id)
 	)`,
 }
@@ -36,6 +38,7 @@ type mysqlDB struct {
 // Ensure mysqlDB conforms to the ImageDatabase interface.
 var _ ImageDatabase = &mysqlDB{}
 
+// MySQLConfig is the configuration for a mySQL db
 type MySQLConfig struct {
 	// Optional.
 	Username, Password string
@@ -74,8 +77,8 @@ func (c MySQLConfig) dataStoreName(databaseName string) string {
 	return fmt.Sprintf("%stcp([%s]:%d)/%s", cred, c.Host, c.Port, databaseName)
 }
 
-// newMySQLDB creates a new BookDatabase backed by a given MySQL server.
-func newMySQLDB(config MySQLConfig) (BookDatabase, error) {
+// newMySQLDB creates a new ImageDatabase backed by a given MySQL server.
+func newMySQLDB(config MySQLConfig) (ImageDatabase, error) {
 	// Check database and table exists. If not, create it.
 	if err := config.ensureTableExists(); err != nil {
 		return nil, err
@@ -95,22 +98,18 @@ func newMySQLDB(config MySQLConfig) (BookDatabase, error) {
 	}
 
 	// Prepared statements. The actual SQL queries are in the code near the
-	// relevant method (e.g. addBook).
+	// relevant method (e.g. addImage).
 	if db.list, err = conn.Prepare(listStatement); err != nil {
 		return nil, fmt.Errorf("mysql: prepare list: %v", err)
 	}
-	if db.listBy, err = conn.Prepare(listByStatement); err != nil {
-		return nil, fmt.Errorf("mysql: prepare listBy: %v", err)
-	}
+
 	if db.get, err = conn.Prepare(getStatement); err != nil {
 		return nil, fmt.Errorf("mysql: prepare get: %v", err)
 	}
 	if db.insert, err = conn.Prepare(insertStatement); err != nil {
 		return nil, fmt.Errorf("mysql: prepare insert: %v", err)
 	}
-	if db.update, err = conn.Prepare(updateStatement); err != nil {
-		return nil, fmt.Errorf("mysql: prepare update: %v", err)
-	}
+
 	if db.delete, err = conn.Prepare(deleteStatement); err != nil {
 		return nil, fmt.Errorf("mysql: prepare delete: %v", err)
 	}
@@ -128,154 +127,96 @@ type rowScanner interface {
 	Scan(dest ...interface{}) error
 }
 
-// scanBook reads a book from a sql.Row or sql.Rows
-func scanBook(s rowScanner) (*Book, error) {
+// scanImage reads an image from a sql.Row or sql.Rows
+func scanImage(s rowScanner) (*Image, error) {
 	var (
-		id            int64
-		title         sql.NullString
-		author        sql.NullString
-		publishedDate sql.NullString
-		imageURL      sql.NullString
-		description   sql.NullString
-		createdBy     sql.NullString
-		createdByID   sql.NullString
+		id          sql.NullString
+		url         sql.NullString
+		description sql.NullString
+		title       sql.NullString
+		format      sql.NullString
 	)
-	if err := s.Scan(&id, &title, &author, &publishedDate, &imageURL,
-		&description, &createdBy, &createdByID); err != nil {
+	if err := s.Scan(&id, &url, &description, &title, &format); err != nil {
 		return nil, err
 	}
 
-	book := &Book{
-		ID:            id,
-		Title:         title.String,
-		Author:        author.String,
-		PublishedDate: publishedDate.String,
-		ImageURL:      imageURL.String,
-		Description:   description.String,
-		CreatedBy:     createdBy.String,
-		CreatedByID:   createdByID.String,
+	image := &Image{
+		ID:          id.String,
+		URL:         url.String,
+		Description: description.String,
+		Title:       title.String,
+		Format:      format.String,
 	}
-	return book, nil
+	return image, nil
 }
 
-const listStatement = `SELECT * FROM books ORDER BY title`
+const listStatement = `SELECT * FROM images ORDER BY title`
 
-// ListBooks returns a list of books, ordered by title.
-func (db *mysqlDB) ListBooks() ([]*Book, error) {
+// ListImages returns a list of images, ordered by title.
+func (db *mysqlDB) ListImages() ([]*Image, error) {
 	rows, err := db.list.Query()
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var books []*Book
+	var images []*Image
 	for rows.Next() {
-		book, err := scanBook(rows)
+		image, err := scanImage(rows)
 		if err != nil {
 			return nil, fmt.Errorf("mysql: could not read row: %v", err)
 		}
 
-		books = append(books, book)
+		images = append(images, image)
 	}
 
-	return books, nil
+	return images, nil
 }
 
-const listByStatement = `
-  SELECT * FROM books
-  WHERE createdById = ? ORDER BY title`
+const getStatement = "SELECT * FROM images WHERE id = ?"
 
-// ListBooksCreatedBy returns a list of books, ordered by title, filtered by
-// the user who created the book entry.
-func (db *mysqlDB) ListBooksCreatedBy(userID string) ([]*Book, error) {
-	if userID == "" {
-		return db.ListBooks()
-	}
-
-	rows, err := db.listBy.Query(userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var books []*Book
-	for rows.Next() {
-		book, err := scanBook(rows)
-		if err != nil {
-			return nil, fmt.Errorf("mysql: could not read row: %v", err)
-		}
-
-		books = append(books, book)
-	}
-
-	return books, nil
-}
-
-const getStatement = "SELECT * FROM books WHERE id = ?"
-
-// GetBook retrieves a book by its ID.
-func (db *mysqlDB) GetBook(id int64) (*Book, error) {
-	book, err := scanBook(db.get.QueryRow(id))
+// GetImage retrieves an image by its ID.
+func (db *mysqlDB) GetImage(id string) (*Image, error) {
+	image, err := scanImage(db.get.QueryRow(id))
 	if err == sql.ErrNoRows {
 		return nil, fmt.Errorf("mysql: could not find book with id %d", id)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("mysql: could not get book: %v", err)
 	}
-	return book, nil
+	return image, nil
 }
 
 const insertStatement = `
-  INSERT INTO books (
-    title, author, publishedDate, imageUrl, description, createdBy, createdById
+  INSERT INTO images (
+    id, url, description, title, format
   ) VALUES (?, ?, ?, ?, ?, ?, ?)`
 
-// AddBook saves a given book, assigning it a new ID.
-func (db *mysqlDB) AddBook(b *Book) (id int64, err error) {
-	r, err := execAffectingOneRow(db.insert, b.Title, b.Author, b.PublishedDate,
-		b.ImageURL, b.Description, b.CreatedBy, b.CreatedByID)
+// AddImage saves a given image, assigning it a new ID.
+func (db *mysqlDB) AddImage(i *Image) (id string, err error) {
+	_, err = execAffectingOneRow(db.insert, i.ID, i.URL, i.Description,
+		i.Title, i.Format)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
-	lastInsertID, err := r.LastInsertId()
-	if err != nil {
-		return 0, fmt.Errorf("mysql: could not get last insert ID: %v", err)
-	}
-	return lastInsertID, nil
+	return i.ID, nil
 }
 
-const deleteStatement = `DELETE FROM books WHERE id = ?`
+const deleteStatement = `DELETE FROM images WHERE id = ?`
 
 // DeleteBook removes a given book by its ID.
-func (db *mysqlDB) DeleteBook(id int64) error {
-	if id == 0 {
-		return errors.New("mysql: book with unassigned ID passed into deleteBook")
+func (db *mysqlDB) DeleteImage(id string) error {
+	if id == "" {
+		return errors.New("mysql: image with unassigned ID passed into deleteBook")
 	}
 	_, err := execAffectingOneRow(db.delete, id)
 	return err
 }
 
-const updateStatement = `
-  UPDATE books
-  SET title=?, author=?, publishedDate=?, imageUrl=?, description=?,
-      createdBy=?, createdById=?
-  WHERE id = ?`
-
-// UpdateBook updates the entry for a given book.
-func (db *mysqlDB) UpdateBook(b *Book) error {
-	if b.ID == 0 {
-		return errors.New("mysql: book with unassigned ID passed into updateBook")
-	}
-
-	_, err := execAffectingOneRow(db.update, b.Title, b.Author, b.PublishedDate,
-		b.ImageURL, b.Description, b.CreatedBy, b.CreatedByID, b.ID)
-	return err
-}
-
 // ensureTableExists checks the table exists. If not, it creates it.
-func (config MySQLConfig) ensureTableExists() error {
-	conn, err := sql.Open("mysql", config.dataStoreName(""))
+func (c MySQLConfig) ensureTableExists() error {
+	conn, err := sql.Open("mysql", c.dataStoreName(""))
 	if err != nil {
 		return fmt.Errorf("mysql: could not get a connection: %v", err)
 	}
@@ -287,14 +228,14 @@ func (config MySQLConfig) ensureTableExists() error {
 			"could be bad address, or this address is not whitelisted for access.")
 	}
 
-	if _, err := conn.Exec("USE library"); err != nil {
+	if _, err := conn.Exec("USE gallery"); err != nil {
 		// MySQL error 1049 is "database does not exist"
 		if mErr, ok := err.(*mysql.MySQLError); ok && mErr.Number == 1049 {
 			return createTable(conn)
 		}
 	}
 
-	if _, err := conn.Exec("DESCRIBE books"); err != nil {
+	if _, err := conn.Exec("DESCRIBE images"); err != nil {
 		// MySQL error 1146 is "table does not exist"
 		if mErr, ok := err.(*mysql.MySQLError); ok && mErr.Number == 1146 {
 			return createTable(conn)

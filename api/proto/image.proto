@@ -5,13 +5,13 @@ package storage;
 // Image
 message Image {
     // Unique integer identifier of the todo task
-    int64 id = 1;
+    string id = 1;
     // The image, either a URL, a binary or base64
     string image = 2;
     // Detail description of the todo task
     string description = 3;
     // Date and time to remind the todo task
-    string name = 4;
+    string title = 4;
     // The format of the image
     string format = 5;
 }
@@ -31,7 +31,7 @@ message CreateResponse{
     string api = 1;
 
     // ID of created image
-    int64 id = 2;
+    string id = 2;
 }
 
 // Request data to read todo task
@@ -40,7 +40,7 @@ message ReadRequest{
     string api = 1;
 
     // Unique integer identifier of the todo task
-    int64 id = 2;
+    string id = 2;
 }
 
 // Contains todo task data specified in by ID request
