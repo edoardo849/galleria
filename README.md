@@ -27,3 +27,20 @@ Apart from bulk image storage and retrieval, ProgImage provides a number of imag
 1. How would coordinate your development environment to handle the build and test process?
 1. What technologies would you use to ease the task of deploying the microservices to a production runtime environment?
 1. What testing did (or would) you do, and why? 
+
+
+Image Upload
+Upload a new image.
+
+Method	POST
+Route	https://api.imgur.com/3/image
+Alternative Route	https://api.imgur.com/3/upload
+Response Model	Basic
+Parameters
+Key	Required	Description
+image	required	A binary file, base64 data, or a URL for an image. (up to 10MB)
+album	optional	The id of the album you want to add the image to. For anonymous albums, {album} should be the deletehash that is returned at creation.
+type	optional	The type of the file that's being sent; file, base64 or URL
+name	optional	The name of the file, this is automatically detected if uploading a file with a POST and multipart / form-data
+title	optional	The title of the image.
+description	optional	The description of the image.
