@@ -1,0 +1,40 @@
+syntax = "proto3";
+package v1;
+
+// Image
+message Image {
+    // Unique integer identifier of the todo task
+    int64 id = 1;
+    // The image, either a URL, a binary or base64
+    string image = 2;
+    // Detail description of the todo task
+    string description = 3;
+    // Date and time to remind the todo task
+    string name = 4;
+    // The format of the image
+    string format = 5;
+}
+
+// Request data to create new image
+message StoreRequest{
+    // API versioning: it is my best practice to specify version explicitly
+    string api = 1;
+
+    // Task entity to add
+    Image image = 2;
+}
+
+// Response that contains data for created image
+message StoreResponse{
+    // API versioning: it is my best practice to specify version explicitly
+    string api = 1;
+
+    // ID of created image
+    int64 id = 2;
+}
+
+// Service to manage images
+service ImageService {
+    // Create new todo task
+    rpc Store(StoreResponse) returns (StoreResponse);
+}
