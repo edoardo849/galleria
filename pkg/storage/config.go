@@ -9,12 +9,10 @@ package storage
 )
 
 var (
-	DB          BookDatabase
+	DB          ImageDatabase
 	
 	StorageBucket     *gStorage.BucketHandle
 	StorageBucketName string
-
-	
 )
 
 func init() {
@@ -27,6 +25,7 @@ func init() {
 	 	Instance: "",
 	})
 
+	// TODO create bucket
 	StorageBucketName = "bcg-progimage"
 	StorageBucket, err = configureStorage(StorageBucketName)
 	if err != nil {
