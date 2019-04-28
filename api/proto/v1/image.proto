@@ -16,7 +16,7 @@ message Image {
 }
 
 // Request data to create new image
-message StoreRequest{
+message CreateRequest{
     // API versioning: it is my best practice to specify version explicitly
     string api = 1;
 
@@ -25,7 +25,7 @@ message StoreRequest{
 }
 
 // Response that contains data for created image
-message StoreResponse{
+message CreateResponse{
     // API versioning: it is my best practice to specify version explicitly
     string api = 1;
 
@@ -33,8 +33,29 @@ message StoreResponse{
     int64 id = 2;
 }
 
+// Request data to read todo task
+message ReadRequest{
+    // API versioning: it is my best practice to specify version explicitly
+    string api = 1;
+
+    // Unique integer identifier of the todo task
+    int64 id = 2;
+}
+
+// Contains todo task data specified in by ID request
+message ReadResponse{
+    // API versioning: it is my best practice to specify version explicitly
+    string api = 1;
+
+    // Task entity read by ID
+    Image image = 2;
+}
+
 // Service to manage images
 service ImageService {
-    // Create new todo task
-    rpc Store(StoreResponse) returns (StoreResponse);
+    // Create new image in the storage
+    rpc Create(CreateRequest) returns (CreateResponse);
+
+    // Read image
+    rpc Read(ReadRequest) returns (ReadResponse);
 }
