@@ -22,14 +22,16 @@ var (
 func init() {
 	var err error
 
-	DB, err = configureCloudSQL(cloudSQLConfig{
-		Username: "admin",
-		Password: "admin",
-		// The connection name of the Cloud SQL v2 instance, i.e.,
-		// "project:region:instance-id"
-		// Cloud SQL v1 instances are not supported.
-		Instance: "",
-	})
+	DB = newMemoryDB()
+
+	// DB, err = configureCloudSQL(cloudSQLConfig{
+	// 	Username: "admin",
+	// 	Password: "admin",
+	// 	// The connection name of the Cloud SQL v2 instance, i.e.,
+	// 	// "project:region:instance-id"
+	// 	// Cloud SQL v1 instances are not supported.
+	// 	Instance: "",
+	// })
 
 	// TODO create bucket
 	StorageBucketName = "bcg-progimage"
@@ -37,7 +39,6 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }
 
 func configureStorage(bucketID string) (*gStorage.BucketHandle, error) {

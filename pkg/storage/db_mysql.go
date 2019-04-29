@@ -14,7 +14,7 @@ var createTableStatements = []string{
 	`CREATE DATABASE IF NOT EXISTS gallery DEFAULT CHARACTER SET = 'utf8' DEFAULT COLLATE 'utf8_general_ci';`,
 	`USE gallery;`,
 	`CREATE TABLE IF NOT EXISTS images (
-		id CHAR(40),
+		id CHAR(40) NOT NULL,
 		url VARCHAR(255) NOT NULL,
 		description TEXT NULL,
 		title VARCHAR(255) NULL,
@@ -179,7 +179,7 @@ const getStatement = "SELECT * FROM images WHERE id = ?"
 func (db *mysqlDB) GetImage(id string) (*Image, error) {
 	image, err := scanImage(db.get.QueryRow(id))
 	if err == sql.ErrNoRows {
-		return nil, fmt.Errorf("mysql: could not find book with id %d", id)
+		return nil, fmt.Errorf("mysql: could not find book with id %s", id)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("mysql: could not get book: %v", err)

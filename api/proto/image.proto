@@ -6,8 +6,8 @@ package storage;
 message Image {
     // Unique integer identifier of the todo task
     string id = 1;
-    // The image, either a URL, a binary or base64
-    string image = 2;
+    // The image url
+    string url = 2;
     // Detail description of the todo task
     string description = 3;
     // Date and time to remind the todo task
