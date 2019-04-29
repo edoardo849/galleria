@@ -7,9 +7,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net/http"
 
 	pbs "bitbucket.org/edoardo849/progimage/pkg/api/storage"
+	"bitbucket.org/edoardo849/progimage/pkg/common"
 	st "bitbucket.org/edoardo849/progimage/pkg/storage"
 	"cloud.google.com/go/storage"
 )
@@ -70,27 +70,19 @@ func (ss storageServiceServer) Upload(ctx context.Context, req *pbs.UploadReques
 	}, nil
 }
 
-func (ss storageServiceServer) Read(ctx context.Context, req *pbs.ReadRequest) (*pbs.ReadResponse, error) {
+func (ss storageServiceServer) Get(ctx context.Context, req *pbs.ReadRequest) (*pbs.ReadResponse, error) {
 
 	image, err := st.DB.GetImage(req.Id)
 
-	resp, e := http.Get(image.URL)
-	if e != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	buf := bytes.NewBuffer(make([]byte, 0, resp.ContentLength))
-	_, err = io.Copy(buf, resp.Body)
-
+	bytes, err := common.GetRawFromURL(image.URL)
 	if err != nil {
 		return nil, err
 	}
 
 	return &pbs.ReadResponse{
 		ContentType:   image.ContentType,
-		ContentLength: resp.ContentLength,
-		Data:          buf.Bytes(),
+		ContentLength: int64(len(bytes)),
+		Data:          bytes,
 	}, nil
 
 }

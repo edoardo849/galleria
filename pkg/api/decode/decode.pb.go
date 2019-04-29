@@ -26,8 +26,7 @@ const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 // Image
 type Image struct {
-	// The image url
-	Url string `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
+	Data []byte `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
 	// The format of the image
 	Format               string   `protobuf:"bytes,2,opt,name=format,proto3" json:"format,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -60,11 +59,11 @@ func (m *Image) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Image proto.InternalMessageInfo
 
-func (m *Image) GetUrl() string {
+func (m *Image) GetData() []byte {
 	if m != nil {
-		return m.Url
+		return m.Data
 	}
-	return ""
+	return nil
 }
 
 func (m *Image) GetFormat() string {
@@ -74,127 +73,22 @@ func (m *Image) GetFormat() string {
 	return ""
 }
 
-// Request data to convert an image
-type DecodeRequest struct {
-	// API versioning: it is my best practice to specify version explicitly
-	Api string `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
-	// Image to convert
-	Image                *Image   `protobuf:"bytes,2,opt,name=image,proto3" json:"image,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DecodeRequest) Reset()         { *m = DecodeRequest{} }
-func (m *DecodeRequest) String() string { return proto.CompactTextString(m) }
-func (*DecodeRequest) ProtoMessage()    {}
-func (*DecodeRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_155635b60351d567, []int{1}
-}
-
-func (m *DecodeRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DecodeRequest.Unmarshal(m, b)
-}
-func (m *DecodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DecodeRequest.Marshal(b, m, deterministic)
-}
-func (m *DecodeRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DecodeRequest.Merge(m, src)
-}
-func (m *DecodeRequest) XXX_Size() int {
-	return xxx_messageInfo_DecodeRequest.Size(m)
-}
-func (m *DecodeRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DecodeRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DecodeRequest proto.InternalMessageInfo
-
-func (m *DecodeRequest) GetApi() string {
-	if m != nil {
-		return m.Api
-	}
-	return ""
-}
-
-func (m *DecodeRequest) GetImage() *Image {
-	if m != nil {
-		return m.Image
-	}
-	return nil
-}
-
-// Response that contains data for converted image
-type DecodeResponse struct {
-	// API versioning: it is my best practice to specify version explicitly
-	Api string `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
-	// Converted image
-	Image                *Image   `protobuf:"bytes,2,opt,name=image,proto3" json:"image,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DecodeResponse) Reset()         { *m = DecodeResponse{} }
-func (m *DecodeResponse) String() string { return proto.CompactTextString(m) }
-func (*DecodeResponse) ProtoMessage()    {}
-func (*DecodeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_155635b60351d567, []int{2}
-}
-
-func (m *DecodeResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DecodeResponse.Unmarshal(m, b)
-}
-func (m *DecodeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DecodeResponse.Marshal(b, m, deterministic)
-}
-func (m *DecodeResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DecodeResponse.Merge(m, src)
-}
-func (m *DecodeResponse) XXX_Size() int {
-	return xxx_messageInfo_DecodeResponse.Size(m)
-}
-func (m *DecodeResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_DecodeResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DecodeResponse proto.InternalMessageInfo
-
-func (m *DecodeResponse) GetApi() string {
-	if m != nil {
-		return m.Api
-	}
-	return ""
-}
-
-func (m *DecodeResponse) GetImage() *Image {
-	if m != nil {
-		return m.Image
-	}
-	return nil
-}
-
 func init() {
 	proto.RegisterType((*Image)(nil), "decode.Image")
-	proto.RegisterType((*DecodeRequest)(nil), "decode.DecodeRequest")
-	proto.RegisterType((*DecodeResponse)(nil), "decode.DecodeResponse")
 }
 
 func init() { proto.RegisterFile("decode.proto", fileDescriptor_155635b60351d567) }
 
 var fileDescriptor_155635b60351d567 = []byte{
-	// 176 bytes of a gzipped FileDescriptorProto
+	// 121 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x49, 0x49, 0x4d, 0xce,
-	0x4f, 0x49, 0xd5, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x83, 0xf0, 0x94, 0x0c, 0xb9, 0x58,
-	0x3d, 0x73, 0x13, 0xd3, 0x53, 0x85, 0x04, 0xb8, 0x98, 0x4b, 0x8b, 0x72, 0x24, 0x18, 0x15, 0x18,
-	0x35, 0x38, 0x83, 0x40, 0x4c, 0x21, 0x31, 0x2e, 0xb6, 0xb4, 0xfc, 0xa2, 0xdc, 0xc4, 0x12, 0x09,
-	0x26, 0xb0, 0x20, 0x94, 0xa7, 0xe4, 0xc6, 0xc5, 0xeb, 0x02, 0xd6, 0x1c, 0x94, 0x5a, 0x58, 0x9a,
-	0x5a, 0x5c, 0x02, 0xd2, 0x9a, 0x58, 0x90, 0x09, 0xd3, 0x9a, 0x58, 0x90, 0x29, 0xa4, 0xcc, 0xc5,
-	0x9a, 0x09, 0x32, 0x15, 0xac, 0x93, 0xdb, 0x88, 0x57, 0x0f, 0x6a, 0x37, 0xd8, 0xaa, 0x20, 0x88,
-	0x9c, 0x92, 0x3b, 0x17, 0x1f, 0xcc, 0x9c, 0xe2, 0x82, 0xfc, 0xbc, 0xe2, 0x54, 0x32, 0x0d, 0x32,
-	0xf2, 0x80, 0x39, 0x28, 0x38, 0xb5, 0xa8, 0x2c, 0x33, 0x39, 0x55, 0xc8, 0x9c, 0x8b, 0x0d, 0x22,
-	0x20, 0x24, 0x0a, 0xd3, 0x80, 0xe2, 0x62, 0x29, 0x31, 0x74, 0x61, 0x88, 0x03, 0x92, 0xd8, 0xc0,
-	0x81, 0x63, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0xe8, 0xc8, 0xa9, 0xb0, 0x2c, 0x01, 0x00, 0x00,
+	0x4f, 0x49, 0xd5, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x83, 0xf0, 0x94, 0x8c, 0xb9, 0x58,
+	0x3d, 0x73, 0x13, 0xd3, 0x53, 0x85, 0x84, 0xb8, 0x58, 0x52, 0x12, 0x4b, 0x12, 0x25, 0x18, 0x15,
+	0x18, 0x35, 0x78, 0x82, 0xc0, 0x6c, 0x21, 0x31, 0x2e, 0xb6, 0xb4, 0xfc, 0xa2, 0xdc, 0xc4, 0x12,
+	0x09, 0x26, 0x05, 0x46, 0x0d, 0xce, 0x20, 0x28, 0xcf, 0xc8, 0x9c, 0x8b, 0xd7, 0x05, 0xac, 0x3d,
+	0x38, 0xb5, 0xa8, 0x2c, 0x33, 0x39, 0x55, 0x48, 0x8d, 0x8b, 0x0d, 0x22, 0x20, 0xc4, 0xab, 0x07,
+	0xb5, 0x06, 0x6c, 0xaa, 0x14, 0x2a, 0x37, 0x89, 0x0d, 0x6c, 0xb9, 0x31, 0x20, 0x00, 0x00, 0xff,
+	0xff, 0x65, 0x6f, 0x20, 0x39, 0x8c, 0x00, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -210,7 +104,7 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type DecodeServiceClient interface {
 	// Create new image in the storage
-	Decode(ctx context.Context, in *DecodeRequest, opts ...grpc.CallOption) (*DecodeResponse, error)
+	Decode(ctx context.Context, in *Image, opts ...grpc.CallOption) (*Image, error)
 }
 
 type decodeServiceClient struct {
@@ -221,8 +115,8 @@ func NewDecodeServiceClient(cc *grpc.ClientConn) DecodeServiceClient {
 	return &decodeServiceClient{cc}
 }
 
-func (c *decodeServiceClient) Decode(ctx context.Context, in *DecodeRequest, opts ...grpc.CallOption) (*DecodeResponse, error) {
-	out := new(DecodeResponse)
+func (c *decodeServiceClient) Decode(ctx context.Context, in *Image, opts ...grpc.CallOption) (*Image, error) {
+	out := new(Image)
 	err := c.cc.Invoke(ctx, "/decode.DecodeService/Decode", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -233,14 +127,14 @@ func (c *decodeServiceClient) Decode(ctx context.Context, in *DecodeRequest, opt
 // DecodeServiceServer is the server API for DecodeService service.
 type DecodeServiceServer interface {
 	// Create new image in the storage
-	Decode(context.Context, *DecodeRequest) (*DecodeResponse, error)
+	Decode(context.Context, *Image) (*Image, error)
 }
 
 // UnimplementedDecodeServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedDecodeServiceServer struct {
 }
 
-func (*UnimplementedDecodeServiceServer) Decode(ctx context.Context, req *DecodeRequest) (*DecodeResponse, error) {
+func (*UnimplementedDecodeServiceServer) Decode(ctx context.Context, req *Image) (*Image, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Decode not implemented")
 }
 
@@ -249,7 +143,7 @@ func RegisterDecodeServiceServer(s *grpc.Server, srv DecodeServiceServer) {
 }
 
 func _DecodeService_Decode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DecodeRequest)
+	in := new(Image)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -261,7 +155,7 @@ func _DecodeService_Decode_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/decode.DecodeService/Decode",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DecodeServiceServer).Decode(ctx, req.(*DecodeRequest))
+		return srv.(DecodeServiceServer).Decode(ctx, req.(*Image))
 	}
 	return interceptor(ctx, in, info, handler)
 }

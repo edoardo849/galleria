@@ -15,24 +15,22 @@ message UploadRequest {
     bytes data = 5;
 }
 
-
-// Contains todo task data specified in by ID request
 message ReadRequest{
     string id = 1;
 }
 
-// Contains todo task data specified in by ID request
 message ReadResponse{
     string contentType = 1;
     int64 contentLength = 2;
     bytes data = 3;
 }
 
-// Service to manage images
+// Service to manage storage
 service StorageService {
-    // Create new image in the storage
+
+    // Create new file in the storage
     rpc Upload(UploadRequest) returns (UploadResponse);
 
-    // Read image
-    rpc Read(ReadRequest) returns (ReadResponse);
+    // Get file
+    rpc Get(ReadRequest) returns (ReadResponse);
 }

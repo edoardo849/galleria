@@ -62,7 +62,7 @@ func handleImageGet(c pbs.StorageServiceClient) http.HandlerFunc {
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
 
-		res, err := c.Read(ctx, &pbs.ReadRequest{Id: id})
+		res, err := c.Get(ctx, &pbs.ReadRequest{Id: id})
 		if err != nil {
 			respondWithError(w, http.StatusBadRequest, err.Error())
 		}
