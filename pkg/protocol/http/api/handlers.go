@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"path"
+	"strconv"
 	"time"
 
 	pbs "bitbucket.org/edoardo849/progimage/pkg/api/storage"
@@ -31,10 +32,11 @@ func handleImageCreate(c pbs.StorageServiceClient) http.HandlerFunc {
 		}
 
 		req := pbs.UploadRequest{
-			Filename:    fh.Filename,
-			Extension:   path.Ext(fh.Filename),
-			ContentType: fh.Header.Get("Content-Type"),
-			Data:        b,
+			Filename:      fh.Filename,
+			Extension:     path.Ext(fh.Filename),
+			ContentType:   fh.Header.Get("Content-Type"),
+			ContentLength: int64(len(b)),
+			Data:          b,
 		}
 		res, err := c.Upload(context.Background(), &req)
 		if err != nil {
@@ -64,7 +66,13 @@ func handleImageGet(c pbs.StorageServiceClient) http.HandlerFunc {
 		if err != nil {
 			respondWithError(w, http.StatusBadRequest, err.Error())
 		}
-		http.Redirect(w, r, res.Url, http.StatusSeeOther)
+
+		w.Header().Set("Content-Type", res.ContentType)
+		w.Header().Set("Content-Length", strconv.FormatInt(res.ContentLength, 10))
+		if _, err := w.Write(res.Data); err != nil {
+			log.Println("unable to write image.")
+		}
+
 		return
 	}
 }

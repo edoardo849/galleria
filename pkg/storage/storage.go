@@ -21,9 +21,10 @@ type ImageDatabase interface {
 
 // Image is the image service
 type Image struct {
-	ID          string
-	URL         string
-	Filename    string
-	ContentType string
-	Extension   string
+	ID            string
+	URL           string
+	Filename      string
+	ContentType   string
+	ContentLength int64
+	Extension     string
 }

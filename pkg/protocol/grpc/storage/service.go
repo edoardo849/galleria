@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 
 	pbs "bitbucket.org/edoardo849/progimage/pkg/api/storage"
 	st "bitbucket.org/edoardo849/progimage/pkg/storage"
@@ -51,11 +52,12 @@ func (ss storageServiceServer) Upload(ctx context.Context, req *pbs.UploadReques
 	const publicURL = "https://storage.googleapis.com/%s/%s"
 
 	image := &st.Image{
-		ID:          id,
-		Filename:    req.Filename,
-		URL:         fmt.Sprintf(publicURL, st.StorageBucketName, id),
-		ContentType: req.ContentType,
-		Extension:   req.Extension,
+		ID:            id,
+		Filename:      req.Filename,
+		URL:           fmt.Sprintf(publicURL, st.StorageBucketName, id),
+		ContentType:   req.ContentType,
+		ContentLength: req.ContentLength,
+		Extension:     req.Extension,
 	}
 
 	_, err := st.DB.AddImage(image)
@@ -70,12 +72,25 @@ func (ss storageServiceServer) Upload(ctx context.Context, req *pbs.UploadReques
 
 func (ss storageServiceServer) Read(ctx context.Context, req *pbs.ReadRequest) (*pbs.ReadResponse, error) {
 
-	_, err := st.DB.GetImage(req.Id)
+	image, err := st.DB.GetImage(req.Id)
+
+	resp, e := http.Get(image.URL)
+	if e != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	buf := bytes.NewBuffer(make([]byte, 0, resp.ContentLength))
+	_, err = io.Copy(buf, resp.Body)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	return &pbs.ReadResponse{
+		ContentType:   image.ContentType,
+		ContentLength: resp.ContentLength,
+		Data:          buf.Bytes(),
+	}, nil
 
 }

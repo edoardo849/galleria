@@ -10,8 +10,9 @@ message UploadResponse {
 message UploadRequest {
     string filename = 1;
     string contentType = 2;
-    string extension = 3;
-    bytes data = 4;
+    int64 contentLength = 3;
+    string extension = 4;
+    bytes data = 5;
 }
 
 
@@ -22,11 +23,9 @@ message ReadRequest{
 
 // Contains todo task data specified in by ID request
 message ReadResponse{
-    // API versioning: it is my best practice to specify version explicitly
-    string id = 1;
-
-    // Task entity read by ID
-    string url = 2;
+    string contentType = 1;
+    int64 contentLength = 2;
+    bytes data = 3;
 }
 
 // Service to manage images
