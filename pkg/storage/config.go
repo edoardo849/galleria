@@ -34,7 +34,7 @@ func init() {
 	// })
 
 	// TODO create bucket
-	StorageBucketName = "bcg-progimage"
+	StorageBucketName = "progimage"
 	StorageBucket, err = configureStorage(StorageBucketName)
 	if err != nil {
 		log.Fatal(err)

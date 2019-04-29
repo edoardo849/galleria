@@ -78,7 +78,7 @@ func (s *Server) registerHandlers() {
 	})
 	r.HandleFunc("/status", handleTODO()).Methods("GET")
 	r.HandleFunc("/image", handleImageCreate(imageClient)).Methods("POST")
-	r.HandleFunc("/image", handleImageGet(imageClient)).Methods("GET")
+	r.HandleFunc("/image/{id}", handleImageGet(imageClient)).Methods("GET")
 
 	// [START request_logging]
 	// Delegate all of the HTTP routing and serving to the gorilla/mux router.

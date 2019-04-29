@@ -6,13 +6,16 @@ You are a senior member of a team that has has been tasked with developing a pro
 
 Apart from bulk image storage and retrieval, ProgImage provides a number of image processing and transformation capabilities such as compression, rotation, a variety of filters, thumbnail creation, and masking. 
 
-These capabilities are all delivered as a set of highperformance web-services that can operate on images provided as data in a request, operate on a remote image via a URL, or on images that are already in the repository. All of the processing features should be able to operate in bulk, and at significant scale. 
+These capabilities are all delivered as a set of highperformance web-services that can operate on images provided as data in a request, operate on a remote image via a URL, or on images that are already in the repository. 
+
+All of the processing features should be able to operate in bulk, and at significant scale. 
 
 ## Challenge
 
 ### Required
 
 1. Build a simple microservice that can receive an uploaded image and return a unique identifier for the uploaded image that can be used subsequently to retrieve the image.
+
 1. Extend the microservice so that different image formats can be returned by using a different image file type as an extension on the image request URL.
 1. Write a series of automated tests that test the image upload, download and file format conversion capabilities.
 
