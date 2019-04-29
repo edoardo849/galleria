@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package storage;
 
+import "google/api/annotations.proto";
+
 // Image
 message Image {
     // Unique integer identifier of the todo task
@@ -58,5 +60,9 @@ service ImageService {
     rpc Create(CreateRequest) returns (CreateResponse);
 
     // Read image
-    rpc Read(ReadRequest) returns (ReadResponse);
+    rpc Read(ReadRequest) returns (ReadResponse){
+        option (google.api.http) = {
+            get: "/v1/image/{id}"
+        };
+    }
 }
