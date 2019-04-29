@@ -4,4 +4,5 @@ compile-proto:
 
 build-local: compile-proto
 	go build -o ./cmd/storage/bin/storage ./cmd/storage
+	go build -o ./cmd/api/bin/decode ./cmd/decode
 	go build -o ./cmd/api/bin/api ./cmd/api

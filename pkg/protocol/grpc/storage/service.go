@@ -14,11 +14,6 @@ import (
 	"cloud.google.com/go/storage"
 )
 
-const (
-	// apiVersion is the API version provided by the server
-	apiVersion = "v1"
-)
-
 // ImageService creates a new Image Service
 type storageServiceServer struct{}
 

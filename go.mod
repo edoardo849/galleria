@@ -8,6 +8,7 @@ require (
 	github.com/EngoEngine/engo v1.0.4 // indirect
 	github.com/Shopify/sarama v1.22.0 // indirect
 	github.com/beorn7/perks v1.0.0 // indirect
+	github.com/disintegration/imaging v1.6.0
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gofrs/uuid v3.2.0+incompatible

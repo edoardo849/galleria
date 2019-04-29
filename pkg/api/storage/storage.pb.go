@@ -134,7 +134,6 @@ func (m *UploadRequest) GetData() []byte {
 	return nil
 }
 
-// Contains todo task data specified in by ID request
 type ReadRequest struct {
 	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -174,7 +173,6 @@ func (m *ReadRequest) GetId() string {
 	return ""
 }
 
-// Contains todo task data specified in by ID request
 type ReadResponse struct {
 	ContentType          string   `protobuf:"bytes,1,opt,name=contentType,proto3" json:"contentType,omitempty"`
 	ContentLength        int64    `protobuf:"varint,2,opt,name=contentLength,proto3" json:"contentLength,omitempty"`
@@ -272,9 +270,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type StorageServiceClient interface {
-	// Create new image in the storage
+	// Create new file in the storage
 	Upload(ctx context.Context, in *UploadRequest, opts ...grpc.CallOption) (*UploadResponse, error)
-	// Get image
+	// Get file
 	Get(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*ReadResponse, error)
 }
 
@@ -306,9 +304,9 @@ func (c *storageServiceClient) Get(ctx context.Context, in *ReadRequest, opts ..
 
 // StorageServiceServer is the server API for StorageService service.
 type StorageServiceServer interface {
-	// Create new image in the storage
+	// Create new file in the storage
 	Upload(context.Context, *UploadRequest) (*UploadResponse, error)
-	// Get image
+	// Get file
 	Get(context.Context, *ReadRequest) (*ReadResponse, error)
 }
 

@@ -1,26 +1,32 @@
 package decode
 
 import (
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-)
+	"bytes"
+	"context"
 
-const (
-	// apiVersion is the API version provided by the server
-	apiVersion = "v1"
+	pbd "bitbucket.org/edoardo849/progimage/pkg/api/decode"
+	is "bitbucket.org/edoardo849/progimage/pkg/image"
 )
 
 // convServiceServer creates a new Image Service
-type convServiceServer struct{}
+type decodeServiceServer struct{}
 
-// checkAPI checks if the API version requested by client is supported by server
-func (cs *convServiceServer) checkAPI(api string) error {
-	// API version is "" means use current version of the service
-	if len(api) > 0 {
-		if apiVersion != api {
-			return status.Errorf(codes.Unimplemented,
-				"unsupported API version: service implements API version '%s', but asked for '%s'", apiVersion, api)
-		}
+func (dss decodeServiceServer) Decode(ctx context.Context, req *pbd.Image) (*pbd.Image, error) {
+
+	r := bytes.NewReader(req.Data)
+	img, err := is.Decode(r)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+	var buf bytes.Buffer
+
+	err = is.Convert(&buf, img, req.Filename)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pbd.Image{
+		Data:     buf.Bytes(),
+		Filename: req.Filename,
+	}, nil
 }
