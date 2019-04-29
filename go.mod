@@ -3,7 +3,6 @@ module bitbucket.org/edoardo849/progimage
 go 1.12
 
 require (
-	bitbucket.org/hackitecture/dsim v0.0.0-20190426100401-0c11513a31e7 // indirect
 	cloud.google.com/go v0.37.4
 	github.com/DataDog/zstd v1.4.0 // indirect
 	github.com/EngoEngine/engo v1.0.4 // indirect
@@ -29,7 +28,7 @@ require (
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/paulmach/go.geojson v1.4.0 // indirect
-	github.com/pkg/errors v0.8.1 // indirect
+	github.com/pkg/errors v0.8.1
 	github.com/prometheus/client_model v0.0.0-20190129233127-fd36f4220a90 // indirect
 	github.com/prometheus/common v0.3.0 // indirect
 	github.com/prometheus/procfs v0.0.0-20190425082905-87a4384529e0 // indirect

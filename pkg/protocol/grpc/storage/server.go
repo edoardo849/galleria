@@ -22,7 +22,7 @@ func RunServer(ctx context.Context, port string) error {
 
 	// register service
 	server := grpc.NewServer()
-	pbs.RegisterImageServiceServer(server, imageServiceServer{})
+	pbs.RegisterStorageServiceServer(server, storageServiceServer{})
 
 	// graceful shutdown
 	c := make(chan os.Signal, 1)

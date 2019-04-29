@@ -62,7 +62,7 @@ func (s *Server) ServeHTTP(http *http.Server) error {
 // Register routes
 func (s *Server) registerHandlers() {
 
-	imageClient := pbs.NewImageServiceClient(s.grpcConn)
+	storageClient := pbs.NewStorageServiceClient(s.grpcConn)
 
 	// Use gorilla/mux for rich routing.
 	// See http://www.gorillatoolkit.org/pkg/mux
@@ -77,8 +77,8 @@ func (s *Server) registerHandlers() {
 		return
 	})
 	r.HandleFunc("/status", handleTODO()).Methods("GET")
-	r.HandleFunc("/image", handleImageCreate(imageClient)).Methods("POST")
-	r.HandleFunc("/image/{id}", handleImageGet(imageClient)).Methods("GET")
+	r.HandleFunc("/image", handleImageCreate(storageClient)).Methods("POST")
+	r.HandleFunc("/image/{id}", handleImageGet(storageClient)).Methods("GET")
 
 	// [START request_logging]
 	// Delegate all of the HTTP routing and serving to the gorilla/mux router.

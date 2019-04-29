@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package decode;
+
+// Image
+message Image {
+    // The image url
+    string url = 1;
+
+    // The format of the image
+    string format = 2;
+}
+
+// Request data to convert an image
+message DecodeRequest{
+    // API versioning: it is my best practice to specify version explicitly
+    string api = 1;
+
+    // Image to convert
+    Image image = 2;
+}
+
+// Response that contains data for converted image
+message DecodeResponse{
+    // API versioning: it is my best practice to specify version explicitly
+    string api = 1;
+
+    // Converted image
+    Image image = 2;
+}
+
+// Service to manage images
+service DecodeService {
+    // Create new image in the storage
+    rpc Decode(DecodeRequest) returns (DecodeResponse);
+}

@@ -132,20 +132,20 @@ func scanImage(s rowScanner) (*Image, error) {
 	var (
 		id          sql.NullString
 		url         sql.NullString
-		description sql.NullString
-		title       sql.NullString
-		format      sql.NullString
+		filename    sql.NullString
+		extension   sql.NullString
+		contentType sql.NullString
 	)
-	if err := s.Scan(&id, &url, &description, &title, &format); err != nil {
+	if err := s.Scan(&id, &url, &filename, &extension, &contentType); err != nil {
 		return nil, err
 	}
 
 	image := &Image{
 		ID:          id.String,
 		URL:         url.String,
-		Description: description.String,
-		Title:       title.String,
-		Format:      format.String,
+		Filename:    filename.String,
+		Extension:   extension.String,
+		ContentType: contentType.String,
 	}
 	return image, nil
 }
@@ -194,8 +194,7 @@ const insertStatement = `
 
 // AddImage saves a given image, assigning it a new ID.
 func (db *mysqlDB) AddImage(i *Image) (id string, err error) {
-	_, err = execAffectingOneRow(db.insert, i.ID, i.URL, i.Description,
-		i.Title, i.Format)
+	_, err = execAffectingOneRow(db.insert, i.ID, i.URL)
 	if err != nil {
 		return "", err
 	}

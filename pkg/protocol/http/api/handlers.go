@@ -2,11 +2,13 @@ package api
 
 import (
 	"context"
+	"io/ioutil"
+	"log"
 	"net/http"
+	"path"
 	"time"
 
 	pbs "bitbucket.org/edoardo849/progimage/pkg/api/storage"
-	st "bitbucket.org/edoardo849/progimage/pkg/storage"
 
 	"github.com/gorilla/mux"
 )
@@ -15,42 +17,37 @@ const (
 	apiVersion = "v1"
 )
 
-func handleImageCreate(c pbs.ImageServiceClient) http.HandlerFunc {
+func handleImageCreate(c pbs.StorageServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-		defer cancel()
 
 		f, fh, err := r.FormFile("image")
 		if err != nil {
 			respondWithError(w, http.StatusBadRequest, err.Error())
 		}
 
-		image := st.Image{}
-		err = image.Upload(f, fh)
+		b, err := ioutil.ReadAll(f)
 		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
+			log.Fatal(err)
 		}
 
-		req := pbs.CreateRequest{
-			Api: apiVersion,
-			Image: &pbs.Image{
-				Id:          image.ID,
-				Url:         image.URL,
-				Title:       image.Title,
-				Description: image.Description,
-				Format:      image.Format,
-			},
+		req := pbs.UploadRequest{
+			Filename:    fh.Filename,
+			Extension:   path.Ext(fh.Filename),
+			ContentType: fh.Header.Get("Content-Type"),
+			Data:        b,
 		}
-		res, err := c.Create(ctx, &req)
+		res, err := c.Upload(context.Background(), &req)
 		if err != nil {
 			respondWithError(w, http.StatusBadRequest, err.Error())
 		}
-		respondWithJSON(w, http.StatusOK, map[string]string{"id": res.Id})
+
+		respondWithJSON(w, http.StatusOK, res)
 		return
 	}
 }
 
-func handleImageGet(c pbs.ImageServiceClient) http.HandlerFunc {
+func handleImageGet(c pbs.StorageServiceClient) http.HandlerFunc {
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		id := vars["id"]
@@ -63,11 +60,11 @@ func handleImageGet(c pbs.ImageServiceClient) http.HandlerFunc {
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
 
-		res, err := c.Read(ctx, &pbs.ReadRequest{Api: apiVersion, Id: id})
+		res, err := c.Read(ctx, &pbs.ReadRequest{Id: id})
 		if err != nil {
 			respondWithError(w, http.StatusBadRequest, err.Error())
 		}
-		http.Redirect(w, r, res.Image.Url, http.StatusSeeOther)
+		http.Redirect(w, r, res.Url, http.StatusSeeOther)
 		return
 	}
 }
