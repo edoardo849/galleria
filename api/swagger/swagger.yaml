@@ -1,85 +1,211 @@
 openapi: "3.0.0"
 info:
   version: 1.0.0
-  title: Swagger Petstore
+  title: Progimage
+  description: >
+    <p>
+    ProgImage is designed as a specialised image storage and processing engine
+    to be used by other applications, and will (only) provide highperformance 
+    access via its API.
+    </p>
+    <p>
+    ProgImage provides a number of image processing and transformation capabilities 
+    such as compression, rotation, a variety of filters, thumbnail creation, and masking.
+    </p>
+    <p>
+    These capabilities are all delivered as a set of highperformance web-services that can 
+    operate on images provided as data in a request, operate on a remote image via a URL, 
+    or on images that are already in the repository.
+    </p>
   license:
     name: MIT
 servers:
-  - url: http://petstore.swagger.io/v1
+  - url: http://35.197.243.170:8081/v1
 paths:
   /image:
-    get:
-      summary: List all pets
-      operationId: listPets
-      tags:
-        - pets
-      parameters:
-        - name: limit
-          in: query
-          description: How many items to return at one time (max 100)
-          required: false
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: A paged array of pets
-          headers:
-            x-next:
-              description: A link to the next page of responses
-              schema:
-                type: string
-          content:
-            application/json:    
-              schema:
-                $ref: "#/components/schemas/Pets"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
     post:
-      summary: Upload a new image.
-      operationId: uploadImage
+      summary: Uploads an image
+      operationId: imageCreate
       tags:
         - image
       requestBody:
-        description: A JSON Object containing Card information
-        required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Image'
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
       responses:
-        '201':
-          description: Null response
+        '200':
+          description: The location of the created image
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Id"
         default:
           description: unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /pets/{petId}:
+  /image/{imageId}:
     get:
-      summary: Info for a specific pet
-      operationId: showPetById
+      summary: Get an image
+      operationId: imageGet
       tags:
-        - pets
+        - image
       parameters:
-        - name: petId
+        - name: imageId
           in: path
           required: true
-          description: The id of the pet to retrieve
+          description: The id of the image to retrieve
           schema:
             type: string
       responses:
         '200':
-          description: Expected response to a valid request
+          description: An image
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpg:
+              schema:
+                type: string
+                format: binary
+            image/tiff:
+              schema:
+                type: string
+                format: binary
+            image/gif:
+              schema:
+                type: string
+                format: binary
+            image/bmp:
+              schema:
+                type: string
+                format: binary
+        default:
+          description: unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Pets"
+                $ref: "#/components/schemas/Error"
+  /image/{imageId}.{format}:
+    get:
+      summary: Convert an image
+      operationId: imageConvertFromCache
+      tags:
+        - image
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          description: The id of the image stored in the cache
+          schema:
+            type: string
+        - name: format
+          in: path
+          required: true
+          description: The conversion format
+          schema:
+            type: string
+            enum: [png, jpg, jpeg, tiff, gif, bmp]
+      responses:
+        '200':
+          description: The converted image
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpg:
+              schema:
+                type: string
+                format: binary
+            image/tiff:
+              schema:
+                type: string
+                format: binary
+            image/gif:
+              schema:
+                type: string
+                format: binary
+            image/bmp:
+              schema:
+                type: string
+                format: binary
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /image/convert:
+    post:
+      summary: Convert an image from a format to another
+      operationId: imageConvert
+      tags:
+        - image
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Convert"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ConvertForm"
+      responses:
+        '200':
+          description: An image
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpg:
+              schema:
+                type: string
+                format: binary
+            image/tiff:
+              schema:
+                type: string
+                format: binary
+            image/gif:
+              schema:
+                type: string
+                format: binary
+            image/bmp:
+              schema:
+                type: string
+                format: binary
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /image/thumbnail:
+    post:
+      summary: Convert an image from a format to another by specifying an Url
+      operationId: thumbnail
+      tags:
+        - image
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Thumbnail"
+      responses:
+        '200':
+          description: An image
+          content:            
+            image/jpg:
+              schema:
+                type: string
+                format: binary
         default:
           description: unexpected error
           content:
@@ -88,30 +214,68 @@ paths:
                 $ref: "#/components/schemas/Error"
 components:
   schemas:
-    Image:
+    Id:
       required:
-        - image
+        - id
       properties:
         id:
-          type: integer
-          format: int64
+          type: string
+          description: The Id of the image stored in Progimage
+    Convert:
+      required:
+        - url
+        - filename
+        - to
+      properties:
+        url:
+          type: string
+          description: The URL where the image is located
+        filename:
+          type: string
+          description: The name of the image
+        to:
+          type: string
+          enum: [png, jpg, jpeg, tiff, gif, bmp]
+          description: The target format
+        from:
+          type: string
+          description: The original format of the image
+    ConvertForm:
+      required:
+        - image
+        - filename
+        - to
+      properties:
         image:
           type: string
-          example: R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7
-          description: A binary file, base64 data, or a URL for an image. (up to 10MB)
-        format:
+          format: binary
+          description: The image
+        filename:
           type: string
-          example: jpg
-        name:
+          description: The name of the image
+        to:
           type: string
-          example: image
-        description:
+          enum: [png, jpg, jpeg, tiff, gif, bmp]
+          description: The target format
+        from:
           type: string
-          example: Image Description
-    Pets:
-      type: array
-      items:
-        $ref: "#/components/schemas/Pet"
+          description: The original format of the image
+    Thumbnail:
+      required:
+        - image
+        - width
+        - height
+      properties:
+        image:
+          type: string
+          format: binary
+          description: The image to transform into a thumbnail
+        width:
+          type: integer
+          description: The desired width of the thumbnail
+        height:
+          type: integer
+          description: The desired height of the thumbnail
     Error:
       required:
         - code
