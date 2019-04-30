@@ -3,11 +3,12 @@ package storage
 import (
 	"bytes"
 	"context"
-	"crypto/sha1"
 	"errors"
 	"fmt"
 	"io"
 	"log"
+
+	uuid "github.com/gofrs/uuid"
 
 	pbs "bitbucket.org/edoardo849/progimage/pkg/api/storage"
 	"bitbucket.org/edoardo849/progimage/pkg/common"
@@ -26,10 +27,9 @@ func (ss storageServiceServer) Upload(ctx context.Context, req *pbs.UploadReques
 	}
 	r := bytes.NewReader(req.Data)
 
-	h := sha1.New()
-	data := io.TeeReader(r, h)
+	// random filename, retaining existing extension.
+	id := uuid.Must(uuid.NewV4()).String() + req.Extension
 
-	id := fmt.Sprintf("%x%s", h.Sum(nil), req.Extension)
 	log.Printf("Getting image from cache %s\n", id)
 	w := st.StorageBucket.Object(id).NewWriter(context.Background())
 
@@ -39,7 +39,7 @@ func (ss storageServiceServer) Upload(ctx context.Context, req *pbs.UploadReques
 	// Entries are immutable, be aggressive about caching (1 day).
 	w.CacheControl = "public, max-age=86400"
 
-	if _, err := io.Copy(w, data); err != nil {
+	if _, err := io.Copy(w, r); err != nil {
 		return nil, err
 	}
 	if err := w.Close(); err != nil {
