@@ -2,32 +2,52 @@ package main
 
 import (
 	"log"
-	"time"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-	"google.golang.org/grpc"
-	"github.com/gorilla/mux"
-	"bitbucket.org/edoardo849/progimage/pkg/protocol/http/api"
-)
+	"time"
 
-const (
-	// apiVersion is version of API is provided by server
-	apiVersion = "v1"
-	grpcAddr    = "localhost:50051"
-	httpAddr = "0.0.0.0:8081"
+	pbd "bitbucket.org/edoardo849/progimage/pkg/api/decode"
+	pbs "bitbucket.org/edoardo849/progimage/pkg/api/storage"
+
+	"bitbucket.org/edoardo849/progimage/pkg/protocol/http/api"
+	"github.com/gorilla/mux"
+	"google.golang.org/grpc"
 )
 
 func main() {
 
-	// Set up a connection to the server.
-	conn, err := grpc.Dial(grpcAddr, grpc.WithInsecure())
+	httpAddr := os.Getenv("HTTP_ADDR")
+	if httpAddr == "" {
+		httpAddr = "0.0.0.0:8081"
+	}
+
+	grpcStorageAddr := os.Getenv("GRPC_STORAGE_ADDR")
+	if grpcStorageAddr == "" {
+		grpcStorageAddr = "localhost:50051"
+	}
+
+	grpcDecodeAddr := os.Getenv("GRPC_DECODE_ADDR")
+	if grpcDecodeAddr == "" {
+		grpcDecodeAddr = "localhost:50052"
+	}
+
+	// Set up a connection to the storage server.
+	stConn, err := grpc.Dial(grpcStorageAddr, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
-	defer conn.Close()
+	defer stConn.Close()
+	storageClient := pbs.NewStorageServiceClient(stConn)
 
+	// Set up a connection to the storage server.
+	dsConn, err := grpc.Dial(grpcDecodeAddr, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer dsConn.Close()
+	decodeClient := pbd.NewDecodeServiceClient(dsConn)
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGUSR1, syscall.SIGTERM)
@@ -36,7 +56,8 @@ func main() {
 	server := api.New(
 		mux.NewRouter(),
 		stopServerChan,
-		conn,
+		storageClient,
+		decodeClient,
 	)
 
 	go func() {
@@ -58,6 +79,6 @@ func main() {
 	}()
 	<-stop
 	log.Println("shutting down")
-	
+
 	stopServerChan <- struct{}{}
 }

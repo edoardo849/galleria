@@ -3,6 +3,8 @@ package api
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -18,6 +20,18 @@ func respondWithJSONString(w http.ResponseWriter, code int, payload []byte) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(payload)
+}
+
+func respondWithFile(w http.ResponseWriter, code int, contentType string, contentLength string, fileName string, payload []byte) {
+
+	w.Header().Set("Content-Type", contentType)
+	w.Header().Set("Content-Length", contentLength)
+	w.Header().Set("Content-Disposition", fmt.Sprintf("inline; filename=\"%s\"", fileName))
+	w.WriteHeader(code)
+
+	if _, err := w.Write(payload); err != nil {
+		log.Println("unable to write payload.")
+	}
 }
 
 func withBasicAuth(h http.HandlerFunc) http.HandlerFunc {

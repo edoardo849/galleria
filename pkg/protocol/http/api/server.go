@@ -2,32 +2,35 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
-	"os"
 
+	pbd "bitbucket.org/edoardo849/progimage/pkg/api/decode"
 	pbs "bitbucket.org/edoardo849/progimage/pkg/api/storage"
-	"github.com/gorilla/handlers"
+
 	"github.com/gorilla/mux"
-	"google.golang.org/grpc"
 )
 
-// ServerFactory creates a new Server
-type ServerFactory func(
-	*mux.Router,
-	chan struct{},
-) *Server
+const (
+	// apiVersion is version of API is provided by server
+	apiVersion = "v1"
+)
 
 // New Creates a new server
 func New(
 	r *mux.Router,
 	stopChan chan struct{},
-	grpcConn *grpc.ClientConn) *Server {
+	ssc pbs.StorageServiceClient,
+	dsc pbd.DecodeServiceClient,
+
+) *Server {
 
 	return &Server{
 		router:   mux.NewRouter(),
 		stopChan: stopChan,
-		grpcConn: grpcConn,
+		ssc:      ssc,
+		dsc:      dsc,
 	}
 }
 
@@ -36,7 +39,8 @@ type Server struct {
 	router   *mux.Router
 	stopChan chan struct{}
 	http     *http.Server
-	grpcConn *grpc.ClientConn
+	ssc      pbs.StorageServiceClient
+	dsc      pbd.DecodeServiceClient
 }
 
 // Run runs the server
@@ -47,9 +51,8 @@ func (s *Server) ServeHTTP(http *http.Server) error {
 
 	s.registerHandlers()
 	s.http.Handler = s.router
+	log.Printf("Server listening on %s\n", s.http.Addr)
 
-	// zap.S().Infof("Server listening on %s", s.http.Addr)
-	log.Println("Server listening")
 	go func() {
 		<-s.stopChan
 		log.Println("Shutting down server")
@@ -62,11 +65,9 @@ func (s *Server) ServeHTTP(http *http.Server) error {
 // Register routes
 func (s *Server) registerHandlers() {
 
-	storageClient := pbs.NewStorageServiceClient(s.grpcConn)
-
 	// Use gorilla/mux for rich routing.
 	// See http://www.gorillatoolkit.org/pkg/mux
-	r := s.router.PathPrefix("/v1").Subrouter()
+	r := s.router.PathPrefix(fmt.Sprintf("/%s", apiVersion)).Subrouter()
 
 	// Handle all preflight request
 	r.Methods("OPTIONS").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -77,12 +78,13 @@ func (s *Server) registerHandlers() {
 		return
 	})
 	r.HandleFunc("/status", handleTODO()).Methods("GET")
-	r.HandleFunc("/image", handleImageCreate(storageClient)).Methods("POST")
-	r.HandleFunc("/image/{id}", handleImageGet(storageClient)).Methods("GET")
+	r.HandleFunc("/image", handleImageCreate(s.ssc)).Methods("POST")
 
-	// [START request_logging]
-	// Delegate all of the HTTP routing and serving to the gorilla/mux router.
-	// Log all requests using the standard Apache format.
-	http.Handle("/", handlers.CombinedLoggingHandler(os.Stderr, r))
-	// [END request_logging]
+	// The Router will first try to match the image converter: do not change
+	// this order
+	r.HandleFunc("/image/{id}.{from}.{to}", handleImageConvert(s.dsc)).Methods("GET")
+	r.HandleFunc("/image/{id}", handleImageGet(s.ssc)).Methods("GET")
+
+	r.HandleFunc("/image/convert", handleImageConvert(s.dsc)).Methods("POST")
+
 }

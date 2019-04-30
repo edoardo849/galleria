@@ -9,6 +9,7 @@ import (
 
 // Decode reads an image from r.
 func Decode(r io.Reader) (image.Image, error) {
+
 	return imaging.Decode(r)
 }
 

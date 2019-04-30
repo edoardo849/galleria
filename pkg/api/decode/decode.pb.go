@@ -24,71 +24,197 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-// Image
-type Image struct {
-	Data []byte `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
-	// The format of the image
-	Filename             string   `protobuf:"bytes,2,opt,name=filename,proto3" json:"filename,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+type DecodeRequest_Type int32
+
+const (
+	DecodeRequest_FROM_CACHE DecodeRequest_Type = 0
+	DecodeRequest_FROM_BYTES DecodeRequest_Type = 1
+	DecodeRequest_FROM_URL   DecodeRequest_Type = 2
+)
+
+var DecodeRequest_Type_name = map[int32]string{
+	0: "FROM_CACHE",
+	1: "FROM_BYTES",
+	2: "FROM_URL",
 }
 
-func (m *Image) Reset()         { *m = Image{} }
-func (m *Image) String() string { return proto.CompactTextString(m) }
-func (*Image) ProtoMessage()    {}
-func (*Image) Descriptor() ([]byte, []int) {
+var DecodeRequest_Type_value = map[string]int32{
+	"FROM_CACHE": 0,
+	"FROM_BYTES": 1,
+	"FROM_URL":   2,
+}
+
+func (x DecodeRequest_Type) String() string {
+	return proto.EnumName(DecodeRequest_Type_name, int32(x))
+}
+
+func (DecodeRequest_Type) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_155635b60351d567, []int{0, 0}
+}
+
+// Image
+type DecodeRequest struct {
+	Data                 []byte             `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	Filename             string             `protobuf:"bytes,2,opt,name=filename,proto3" json:"filename,omitempty"`
+	Url                  string             `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
+	From                 string             `protobuf:"bytes,4,opt,name=from,proto3" json:"from,omitempty"`
+	To                   string             `protobuf:"bytes,5,opt,name=to,proto3" json:"to,omitempty"`
+	Type                 DecodeRequest_Type `protobuf:"varint,6,opt,name=type,proto3,enum=decode.DecodeRequest_Type" json:"type,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
+}
+
+func (m *DecodeRequest) Reset()         { *m = DecodeRequest{} }
+func (m *DecodeRequest) String() string { return proto.CompactTextString(m) }
+func (*DecodeRequest) ProtoMessage()    {}
+func (*DecodeRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_155635b60351d567, []int{0}
 }
 
-func (m *Image) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Image.Unmarshal(m, b)
+func (m *DecodeRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DecodeRequest.Unmarshal(m, b)
 }
-func (m *Image) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Image.Marshal(b, m, deterministic)
+func (m *DecodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DecodeRequest.Marshal(b, m, deterministic)
 }
-func (m *Image) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Image.Merge(m, src)
+func (m *DecodeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DecodeRequest.Merge(m, src)
 }
-func (m *Image) XXX_Size() int {
-	return xxx_messageInfo_Image.Size(m)
+func (m *DecodeRequest) XXX_Size() int {
+	return xxx_messageInfo_DecodeRequest.Size(m)
 }
-func (m *Image) XXX_DiscardUnknown() {
-	xxx_messageInfo_Image.DiscardUnknown(m)
+func (m *DecodeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DecodeRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Image proto.InternalMessageInfo
+var xxx_messageInfo_DecodeRequest proto.InternalMessageInfo
 
-func (m *Image) GetData() []byte {
+func (m *DecodeRequest) GetData() []byte {
 	if m != nil {
 		return m.Data
 	}
 	return nil
 }
 
-func (m *Image) GetFilename() string {
+func (m *DecodeRequest) GetFilename() string {
 	if m != nil {
 		return m.Filename
 	}
 	return ""
 }
 
+func (m *DecodeRequest) GetUrl() string {
+	if m != nil {
+		return m.Url
+	}
+	return ""
+}
+
+func (m *DecodeRequest) GetFrom() string {
+	if m != nil {
+		return m.From
+	}
+	return ""
+}
+
+func (m *DecodeRequest) GetTo() string {
+	if m != nil {
+		return m.To
+	}
+	return ""
+}
+
+func (m *DecodeRequest) GetType() DecodeRequest_Type {
+	if m != nil {
+		return m.Type
+	}
+	return DecodeRequest_FROM_CACHE
+}
+
+type DecodeResponse struct {
+	ContentType          string   `protobuf:"bytes,1,opt,name=contentType,proto3" json:"contentType,omitempty"`
+	ContentLength        int64    `protobuf:"varint,2,opt,name=contentLength,proto3" json:"contentLength,omitempty"`
+	Data                 []byte   `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *DecodeResponse) Reset()         { *m = DecodeResponse{} }
+func (m *DecodeResponse) String() string { return proto.CompactTextString(m) }
+func (*DecodeResponse) ProtoMessage()    {}
+func (*DecodeResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_155635b60351d567, []int{1}
+}
+
+func (m *DecodeResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DecodeResponse.Unmarshal(m, b)
+}
+func (m *DecodeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DecodeResponse.Marshal(b, m, deterministic)
+}
+func (m *DecodeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DecodeResponse.Merge(m, src)
+}
+func (m *DecodeResponse) XXX_Size() int {
+	return xxx_messageInfo_DecodeResponse.Size(m)
+}
+func (m *DecodeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DecodeResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DecodeResponse proto.InternalMessageInfo
+
+func (m *DecodeResponse) GetContentType() string {
+	if m != nil {
+		return m.ContentType
+	}
+	return ""
+}
+
+func (m *DecodeResponse) GetContentLength() int64 {
+	if m != nil {
+		return m.ContentLength
+	}
+	return 0
+}
+
+func (m *DecodeResponse) GetData() []byte {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
 func init() {
-	proto.RegisterType((*Image)(nil), "decode.Image")
+	proto.RegisterEnum("decode.DecodeRequest_Type", DecodeRequest_Type_name, DecodeRequest_Type_value)
+	proto.RegisterType((*DecodeRequest)(nil), "decode.DecodeRequest")
+	proto.RegisterType((*DecodeResponse)(nil), "decode.DecodeResponse")
 }
 
 func init() { proto.RegisterFile("decode.proto", fileDescriptor_155635b60351d567) }
 
 var fileDescriptor_155635b60351d567 = []byte{
-	// 124 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x49, 0x49, 0x4d, 0xce,
-	0x4f, 0x49, 0xd5, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x83, 0xf0, 0x94, 0xcc, 0xb9, 0x58,
-	0x3d, 0x73, 0x13, 0xd3, 0x53, 0x85, 0x84, 0xb8, 0x58, 0x52, 0x12, 0x4b, 0x12, 0x25, 0x18, 0x15,
-	0x18, 0x35, 0x78, 0x82, 0xc0, 0x6c, 0x21, 0x29, 0x2e, 0x8e, 0xb4, 0xcc, 0x9c, 0xd4, 0xbc, 0xc4,
-	0xdc, 0x54, 0x09, 0x26, 0x05, 0x46, 0x0d, 0xce, 0x20, 0x38, 0xdf, 0xc8, 0x9c, 0x8b, 0xd7, 0x05,
-	0x6c, 0x44, 0x70, 0x6a, 0x51, 0x59, 0x66, 0x72, 0xaa, 0x90, 0x1a, 0x17, 0x1b, 0x44, 0x40, 0x88,
-	0x57, 0x0f, 0x6a, 0x15, 0xd8, 0x64, 0x29, 0x54, 0x6e, 0x12, 0x1b, 0xd8, 0x01, 0xc6, 0x80, 0x00,
-	0x00, 0x00, 0xff, 0xff, 0xff, 0x9f, 0xe3, 0xab, 0x90, 0x00, 0x00, 0x00,
+	// 282 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x91, 0x41, 0x4b, 0xf3, 0x40,
+	0x10, 0x86, 0xbf, 0x4d, 0xf2, 0x85, 0x76, 0x6c, 0x43, 0x18, 0x50, 0x96, 0x9e, 0x42, 0xf0, 0x90,
+	0x53, 0x0e, 0x55, 0xf0, 0xac, 0xb5, 0xd2, 0x43, 0x45, 0xd8, 0xd6, 0x83, 0x27, 0x89, 0xc9, 0x54,
+	0x0b, 0x69, 0x36, 0x26, 0x5b, 0xa1, 0xbf, 0xd5, 0x3f, 0x23, 0x99, 0xb4, 0xd1, 0x8a, 0xb7, 0xf7,
+	0x79, 0x58, 0x86, 0x99, 0x77, 0x61, 0x90, 0x51, 0xaa, 0x33, 0x8a, 0xcb, 0x4a, 0x1b, 0x8d, 0x6e,
+	0x4b, 0xe1, 0xa7, 0x80, 0xe1, 0x2d, 0x47, 0x45, 0xef, 0x5b, 0xaa, 0x0d, 0x22, 0x38, 0x59, 0x62,
+	0x12, 0x29, 0x02, 0x11, 0x0d, 0x14, 0x67, 0x1c, 0x41, 0x6f, 0xb5, 0xce, 0xa9, 0x48, 0x36, 0x24,
+	0xad, 0x40, 0x44, 0x7d, 0xd5, 0x31, 0xfa, 0x60, 0x6f, 0xab, 0x5c, 0xda, 0xac, 0x9b, 0xd8, 0x4c,
+	0x58, 0x55, 0x7a, 0x23, 0x1d, 0x56, 0x9c, 0xd1, 0x03, 0xcb, 0x68, 0xf9, 0x9f, 0x8d, 0x65, 0x34,
+	0xc6, 0xe0, 0x98, 0x5d, 0x49, 0xd2, 0x0d, 0x44, 0xe4, 0x8d, 0x47, 0xf1, 0x7e, 0xb9, 0xa3, 0x55,
+	0xe2, 0xe5, 0xae, 0x24, 0xc5, 0xef, 0xc2, 0x4b, 0x70, 0x1a, 0x42, 0x0f, 0xe0, 0x4e, 0x3d, 0xdc,
+	0x3f, 0x4f, 0xae, 0x27, 0xb3, 0xa9, 0xff, 0xaf, 0xe3, 0x9b, 0xa7, 0xe5, 0x74, 0xe1, 0x0b, 0x1c,
+	0x40, 0x8f, 0xf9, 0x51, 0xcd, 0x7d, 0x2b, 0xcc, 0xc1, 0x3b, 0x4c, 0xac, 0x4b, 0x5d, 0xd4, 0x84,
+	0x01, 0x9c, 0xa4, 0xba, 0x30, 0x54, 0x98, 0x66, 0x1c, 0x1f, 0xd9, 0x57, 0x3f, 0x15, 0x9e, 0xc3,
+	0x70, 0x8f, 0x73, 0x2a, 0x5e, 0xcd, 0x1b, 0x1f, 0x6c, 0xab, 0x63, 0xd9, 0xb5, 0x64, 0x7f, 0xb7,
+	0x34, 0x9e, 0x1d, 0xaa, 0x5c, 0x50, 0xf5, 0xb1, 0x4e, 0x09, 0xaf, 0xc0, 0x6d, 0x05, 0x9e, 0xfe,
+	0x79, 0xe0, 0xe8, 0xec, 0xb7, 0x6e, 0xb7, 0x7c, 0x71, 0xf9, 0x93, 0x2e, 0xbe, 0x02, 0x00, 0x00,
+	0xff, 0xff, 0x9f, 0x67, 0xe8, 0x3b, 0xb4, 0x01, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -104,7 +230,7 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type DecodeServiceClient interface {
 	// Create new image in the storage
-	Decode(ctx context.Context, in *Image, opts ...grpc.CallOption) (*Image, error)
+	Decode(ctx context.Context, in *DecodeRequest, opts ...grpc.CallOption) (*DecodeResponse, error)
 }
 
 type decodeServiceClient struct {
@@ -115,8 +241,8 @@ func NewDecodeServiceClient(cc *grpc.ClientConn) DecodeServiceClient {
 	return &decodeServiceClient{cc}
 }
 
-func (c *decodeServiceClient) Decode(ctx context.Context, in *Image, opts ...grpc.CallOption) (*Image, error) {
-	out := new(Image)
+func (c *decodeServiceClient) Decode(ctx context.Context, in *DecodeRequest, opts ...grpc.CallOption) (*DecodeResponse, error) {
+	out := new(DecodeResponse)
 	err := c.cc.Invoke(ctx, "/decode.DecodeService/Decode", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -127,14 +253,14 @@ func (c *decodeServiceClient) Decode(ctx context.Context, in *Image, opts ...grp
 // DecodeServiceServer is the server API for DecodeService service.
 type DecodeServiceServer interface {
 	// Create new image in the storage
-	Decode(context.Context, *Image) (*Image, error)
+	Decode(context.Context, *DecodeRequest) (*DecodeResponse, error)
 }
 
 // UnimplementedDecodeServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedDecodeServiceServer struct {
 }
 
-func (*UnimplementedDecodeServiceServer) Decode(ctx context.Context, req *Image) (*Image, error) {
+func (*UnimplementedDecodeServiceServer) Decode(ctx context.Context, req *DecodeRequest) (*DecodeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Decode not implemented")
 }
 
@@ -143,7 +269,7 @@ func RegisterDecodeServiceServer(s *grpc.Server, srv DecodeServiceServer) {
 }
 
 func _DecodeService_Decode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Image)
+	in := new(DecodeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -155,7 +281,7 @@ func _DecodeService_Decode_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/decode.DecodeService/Decode",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DecodeServiceServer).Decode(ctx, req.(*Image))
+		return srv.(DecodeServiceServer).Decode(ctx, req.(*DecodeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

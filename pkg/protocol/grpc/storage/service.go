@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 
 	pbs "bitbucket.org/edoardo849/progimage/pkg/api/storage"
 	"bitbucket.org/edoardo849/progimage/pkg/common"
@@ -29,6 +30,7 @@ func (ss storageServiceServer) Upload(ctx context.Context, req *pbs.UploadReques
 	data := io.TeeReader(r, h)
 
 	id := fmt.Sprintf("%x%s", h.Sum(nil), req.Extension)
+	log.Printf("Getting image from cache %s\n", id)
 	w := st.StorageBucket.Object(id).NewWriter(context.Background())
 
 	// Warning: storage.AllUsers gives public read access to anyone.
