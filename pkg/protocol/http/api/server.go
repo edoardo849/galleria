@@ -80,7 +80,6 @@ func (s *Server) registerHandlers() {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	})
-	r.HandleFunc("/status", handleTODO()).Methods("GET")
 	r.HandleFunc("/image", handleImageCreate(s.ssc)).Methods("POST")
 
 	// The Router will first try to match the image converter: do not change
