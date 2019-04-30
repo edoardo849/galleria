@@ -70,7 +70,6 @@ func (ss storageServiceServer) Upload(ctx context.Context, req *pbs.UploadReques
 func (ss storageServiceServer) Get(ctx context.Context, req *pbs.ReadRequest) (*pbs.ReadResponse, error) {
 
 	image, err := st.DB.GetImage(req.Id)
-
 	bytes, err := common.GetRawFromURL(image.URL)
 	if err != nil {
 		return nil, err

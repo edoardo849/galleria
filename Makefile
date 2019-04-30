@@ -16,3 +16,7 @@ build: compile-proto
 
 run: compile-proto
 	docker-compose -f ./deployments/docker-compose.yml up
+
+integration-tests:
+	newman run ./test/integration/Progimage.postman_collection.json \
+		-e ./test/integration/Progimage.postman_environment.json

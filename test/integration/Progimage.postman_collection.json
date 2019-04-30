@@ -1,0 +1,420 @@
+{
+	"info": {
+		"_postman_id": "ddb627cc-0555-4264-b760-0736a1095b3a",
+		"name": "Progimage",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Image",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f4183525-b72e-4fa0-885a-5343df2d15b6",
+						"exec": [
+							"let jsonData = pm.response.json();",
+							"let id = jsonData.id;",
+							"pm.environment.set(\"id\", id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "username",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "./test/data/2zmlkk.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://35.197.243.170:8081/v1/image",
+					"protocol": "http",
+					"host": [
+						"35",
+						"197",
+						"243",
+						"170"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"image"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Image",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "username",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://35.197.243.170:8081/v1/image/{{id}}",
+					"protocol": "http",
+					"host": [
+						"35",
+						"197",
+						"243",
+						"170"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"image",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Convert from cache",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "eb1cf164-300c-4ccc-91ae-00d3220d83b3",
+						"exec": [
+							"var formats = [",
+							"    'png',",
+							"    'gif',",
+							"    'bmp',",
+							"    'tiff'",
+							"];",
+							"var random = Math.floor(Math.random()*formats.length);",
+							"",
+							"pm.environment.set(\"format\", formats[random]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "username",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://35.197.243.170:8081/v1/image/{{id}}.{{format}}",
+					"protocol": "http",
+					"host": [
+						"35",
+						"197",
+						"243",
+						"170"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"image",
+						"{{id}}.{{format}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Convert from URL",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9af55c26-9789-4edb-883b-6b1594fc6216",
+						"exec": [
+							"var formats = [",
+							"    'png',",
+							"    'gif',",
+							"    'bmp',",
+							"    'tiff'",
+							"];",
+							"var random = Math.floor(Math.random()*formats.length);",
+							"",
+							"pm.environment.set(\"format\", formats[random]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "username",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"filename\" : \"limecat.jpg\",\n\t\"from\": \"jpg\",\n\t\"to\": \"{{format}}\",\n\t\"url\": \"https://i.kym-cdn.com/photos/images/facebook/000/012/445/lime-cat.jpg\"\n}"
+				},
+				"url": {
+					"raw": "http://35.197.243.170:8081/v1/image/convert",
+					"protocol": "http",
+					"host": [
+						"35",
+						"197",
+						"243",
+						"170"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"image",
+						"convert"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Convert from Form",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c236d069-7cc0-4cf7-8b5b-d645159332c9",
+						"exec": [
+							"var formats = [",
+							"    'png',",
+							"    'gif',",
+							"    'bmp',",
+							"    'tiff'",
+							"];",
+							"var random = Math.floor(Math.random()*formats.length);",
+							"",
+							"pm.environment.set(\"format\", formats[random]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "username",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "./test/data/2zog8v.jpg"
+						},
+						{
+							"key": "filename",
+							"value": "cat.jpg",
+							"type": "text"
+						},
+						{
+							"key": "from",
+							"value": "jpg",
+							"type": "text"
+						},
+						{
+							"key": "to",
+							"value": "{{format}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://35.197.243.170:8081/v1/image/convert",
+					"protocol": "http",
+					"host": [
+						"35",
+						"197",
+						"243",
+						"170"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"image",
+						"convert"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Thumbnail",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "username",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "./test/data/2zro9o.jpg"
+						},
+						{
+							"key": "width",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "height",
+							"value": "100",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://35.197.243.170:8081/v1/image/thumbnail",
+					"protocol": "http",
+					"host": [
+						"35",
+						"197",
+						"243",
+						"170"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"image",
+						"thumbnail"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
