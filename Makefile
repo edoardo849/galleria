@@ -7,3 +7,12 @@ build-local: compile-proto
 	go build -o ./cmd/decode/bin/decode ./cmd/decode
 	go build -o ./cmd/thumbnail/bin/thumbnail ./cmd/thumbnail
 	go build -o ./cmd/api/bin/api ./cmd/api
+
+stop:
+	docker-compose -f ./deployments/docker-compose.yml down -v
+
+build: compile-proto
+	docker-compose -f ./deployments/docker-compose.yml build
+
+run: compile-proto
+	docker-compose -f ./deployments/docker-compose.yml up

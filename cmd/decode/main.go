@@ -8,7 +8,6 @@ import (
 	gTr "bitbucket.org/edoardo849/progimage/pkg/protocol/grpc/transform"
 )
 
-// Config is configuration for Server
 var grpcPort string
 
 func main() {

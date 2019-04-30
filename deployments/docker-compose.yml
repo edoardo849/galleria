@@ -1,0 +1,48 @@
+version: "3"
+services:
+  api:
+    build:
+      context: ./../
+      args:
+        - APP_NAME=api
+    environment:
+      - HTTP_ADDR=0.0.0.0:8081
+      - GRPC_STORAGE_ADDR=storage:50051
+      - GRPC_DECODE_ADDR=decode:50052
+      - GRPC_THUMBNAIL_ADDR=thumbnail:50053
+    ports:
+      - "8081:8081"
+  storage:
+    build:
+      context: ./../
+      args:
+        - APP_NAME=storage
+    depends_on:
+      - api
+    environment:
+      - GRPC_PORT=50051
+    expose:
+      - "50051"
+  decode:
+    build:
+      context: ./../
+      args:
+        - APP_NAME=decode
+    depends_on:
+      - api
+    environment:
+      - GRPC_PORT=50052
+    expose:
+      - "50052"
+  thumbnail:
+    build:
+      context: ./../
+      args:
+        - APP_NAME=thumbnail
+    depends_on:
+      - api
+    environment:
+      - GRPC_PORT=50053
+    expose:
+      - "50053"
+  

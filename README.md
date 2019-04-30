@@ -42,3 +42,6 @@ Image uploaded via a form, and stored
 Image transformed via an upload form, URL or ID
 
 The request is stored by hasing the image so that it can be retrieved
+
+
+https://cloud.google.com/docs/authentication/production#auth-cloud-implicit-go

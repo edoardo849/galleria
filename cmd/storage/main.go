@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 
 	gSt "bitbucket.org/edoardo849/progimage/pkg/protocol/grpc/storage"
@@ -12,6 +13,16 @@ import (
 var grpcPort string
 
 func main() {
+	gCloudKey := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
+	if gCloudKey != "" {
+		log.Printf("Google key file in %s\n", gCloudKey)
+		if _, err := os.Stat(gCloudKey); err == nil {
+			log.Println("The Google key file exist")
+		} else if os.IsNotExist(err) {
+			panic("The credentials aren't set")
+		}
+	}
+
 	grpcPort = os.Getenv("GRPC_PORT")
 	if grpcPort == "" {
 		grpcPort = "50051"
