@@ -1,4 +1,4 @@
-package decode
+package transform
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	pbd "bitbucket.org/edoardo849/progimage/pkg/api/decode"
+	tf "bitbucket.org/edoardo849/progimage/pkg/api/transform"
 	"bitbucket.org/edoardo849/progimage/pkg/common"
 	im "bitbucket.org/edoardo849/progimage/pkg/image"
 )
@@ -14,19 +14,19 @@ import (
 // convServiceServer creates a new Image Service
 type decodeServiceServer struct{}
 
-func (dss decodeServiceServer) Decode(ctx context.Context, req *pbd.DecodeRequest) (*pbd.DecodeResponse, error) {
+func (ds decodeServiceServer) Decode(ctx context.Context, req *tf.DecodeRequest) (*tf.Response, error) {
 	log.Printf("Decoding image from %s to %s of type %s", req.From, req.To, req.Type)
 
 	var b []byte
 	var err error
 	switch dType := req.Type; dType {
-	case pbd.DecodeRequest_FROM_URL:
+	case tf.DecodeRequest_FROM_URL:
 		b, err = common.GetRawFromURL(req.Url)
 		if err != nil {
 			return nil, err
 		}
 		log.Printf("Downloaded image from %s", req.Url)
-	case pbd.DecodeRequest_FROM_BYTES:
+	case tf.DecodeRequest_FROM_BYTES:
 		b = req.Data
 		log.Println("Received bytes")
 	}
@@ -45,7 +45,7 @@ func (dss decodeServiceServer) Decode(ctx context.Context, req *pbd.DecodeReques
 		return nil, err
 	}
 	bb := buf.Bytes()
-	return &pbd.DecodeResponse{
+	return &tf.Response{
 		Data:          bb,
 		ContentType:   fmt.Sprintf("image/%s", req.To),
 		ContentLength: int64(len(bb)),

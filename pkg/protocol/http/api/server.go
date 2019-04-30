@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	pbd "bitbucket.org/edoardo849/progimage/pkg/api/decode"
 	pbs "bitbucket.org/edoardo849/progimage/pkg/api/storage"
+	pbt "bitbucket.org/edoardo849/progimage/pkg/api/transform"
 
 	"github.com/gorilla/mux"
 )
@@ -22,7 +22,8 @@ func New(
 	r *mux.Router,
 	stopChan chan struct{},
 	ssc pbs.StorageServiceClient,
-	dsc pbd.DecodeServiceClient,
+	dsc pbt.DecodeServiceClient,
+	tsc pbt.ThumbnailServiceClient,
 
 ) *Server {
 
@@ -31,6 +32,7 @@ func New(
 		stopChan: stopChan,
 		ssc:      ssc,
 		dsc:      dsc,
+		tsc:      tsc,
 	}
 }
 
@@ -40,7 +42,8 @@ type Server struct {
 	stopChan chan struct{}
 	http     *http.Server
 	ssc      pbs.StorageServiceClient
-	dsc      pbd.DecodeServiceClient
+	dsc      pbt.DecodeServiceClient
+	tsc      pbt.ThumbnailServiceClient
 }
 
 // Run runs the server
@@ -86,5 +89,6 @@ func (s *Server) registerHandlers() {
 	r.HandleFunc("/image/{id}", handleImageGet(s.ssc)).Methods("GET")
 
 	r.HandleFunc("/image/convert", handleImageConvert(s.dsc)).Methods("POST")
+	r.HandleFunc("/image/thumbnail", handleImageThumbnail(s.tsc)).Methods("POST")
 
 }

@@ -8,8 +8,8 @@ import (
 	"syscall"
 	"time"
 
-	pbd "bitbucket.org/edoardo849/progimage/pkg/api/decode"
 	pbs "bitbucket.org/edoardo849/progimage/pkg/api/storage"
+	pbt "bitbucket.org/edoardo849/progimage/pkg/api/transform"
 
 	"bitbucket.org/edoardo849/progimage/pkg/protocol/http/api"
 	"github.com/gorilla/mux"
@@ -33,6 +33,11 @@ func main() {
 		grpcDecodeAddr = "localhost:50052"
 	}
 
+	grpcThumbnailAddr := os.Getenv("GRPC_THUMBNAIL_ADDR")
+	if grpcThumbnailAddr == "" {
+		grpcThumbnailAddr = "localhost:50053"
+	}
+
 	// Set up a connection to the storage server.
 	stConn, err := grpc.Dial(grpcStorageAddr, grpc.WithInsecure())
 	if err != nil {
@@ -41,13 +46,21 @@ func main() {
 	defer stConn.Close()
 	storageClient := pbs.NewStorageServiceClient(stConn)
 
-	// Set up a connection to the storage server.
+	// Set up a connection to the decode server.
 	dsConn, err := grpc.Dial(grpcDecodeAddr, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer dsConn.Close()
-	decodeClient := pbd.NewDecodeServiceClient(dsConn)
+	decodeClient := pbt.NewDecodeServiceClient(dsConn)
+
+	// Set up a connection to the decode server.
+	thConn, err := grpc.Dial(grpcThumbnailAddr, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer dsConn.Close()
+	thumbnailClient := pbt.NewThumbnailServiceClient(thConn)
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGUSR1, syscall.SIGTERM)
@@ -58,6 +71,7 @@ func main() {
 		stopServerChan,
 		storageClient,
 		decodeClient,
+		thumbnailClient,
 	)
 
 	go func() {

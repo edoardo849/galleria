@@ -1,13 +1,57 @@
 package api
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"strings"
+	"time"
+
+	pbs "bitbucket.org/edoardo849/progimage/pkg/api/storage"
+	pbt "bitbucket.org/edoardo849/progimage/pkg/api/transform"
+	st "bitbucket.org/edoardo849/progimage/pkg/storage"
 )
+
+func imageGetFromCache(ssc pbs.StorageServiceClient, id string) (*pbs.ReadResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	return ssc.Get(ctx, &pbs.ReadRequest{Id: id})
+}
+
+func imageConvertFromCache(dsc pbt.DecodeServiceClient, filename, from, to string) (*pbt.Response, error) {
+	url := fmt.Sprintf("https://storage.googleapis.com/%s/%s", st.StorageBucketName, filename)
+	return imageConvertFromURL(dsc, filename, from, to, url)
+}
+
+func imageConvertFromBytes(dsc pbt.DecodeServiceClient, filename, from, to string, b []byte) (*pbt.Response, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	return dsc.Decode(ctx, &pbt.DecodeRequest{
+		Type:     pbt.DecodeRequest_FROM_BYTES,
+		Filename: filename,
+		From:     from,
+		To:       to,
+		Data:     b,
+	})
+}
+
+func imageConvertFromURL(dsc pbt.DecodeServiceClient, filename, from, to, url string) (*pbt.Response, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	return dsc.Decode(ctx, &pbt.DecodeRequest{
+		Type:     pbt.DecodeRequest_FROM_URL,
+		Filename: filename,
+		From:     from,
+		To:       to,
+		Url:      url,
+	})
+}
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, _ := json.Marshal(payload)

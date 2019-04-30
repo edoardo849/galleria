@@ -25,3 +25,9 @@ func Convert(w io.Writer, img image.Image, filename string) error {
 
 	return imaging.Encode(w, img, f)
 }
+
+// Thumbnail transforms...
+func Thumbnail(w io.Writer, img image.Image, width, height int) error {
+	dstImage := imaging.Thumbnail(img, width, height, imaging.Lanczos)
+	return imaging.Encode(w, dstImage, imaging.JPEG)
+}

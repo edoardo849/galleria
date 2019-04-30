@@ -14,7 +14,7 @@ var grpcPort string
 func main() {
 	grpcPort = os.Getenv("GRPC_PORT")
 	if grpcPort == "" {
-		grpcPort = "50052"
+		grpcPort = "50053"
 	}
 	if err := runServer(); err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)

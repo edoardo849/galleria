@@ -11,7 +11,7 @@ protoc --proto_path=$SRC_DIR \
 
 protoc --proto_path=$SRC_DIR \
     --proto_path=$TPTY_DIR \
-    --go_out=plugins=grpc:$DST_DIR/decode $SRC_DIR/decode.proto
+    --go_out=plugins=grpc:$DST_DIR/transform $SRC_DIR/transform.proto
 
 
 

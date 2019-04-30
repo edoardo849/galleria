@@ -1,4 +1,4 @@
-package decode
+package transform
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	pbd "bitbucket.org/edoardo849/progimage/pkg/api/decode"
+	tf "bitbucket.org/edoardo849/progimage/pkg/api/transform"
 )
 
 // RunServer runs gRPC service to publish ToDo service
@@ -21,7 +21,8 @@ func RunServer(ctx context.Context, port string) error {
 
 	// register service
 	server := grpc.NewServer()
-	pbd.RegisterDecodeServiceServer(server, decodeServiceServer{})
+	tf.RegisterDecodeServiceServer(server, decodeServiceServer{})
+	tf.RegisterThumbnailServiceServer(server, thumbnailServiceServer{})
 
 	// graceful shutdown
 	c := make(chan os.Signal, 1)
@@ -29,7 +30,7 @@ func RunServer(ctx context.Context, port string) error {
 	go func() {
 		for range c {
 			// sig is a ^C, handle it
-			log.Println("shutting down gRPC decode service server...")
+			log.Println("shutting down gRPC transform service server...")
 
 			server.GracefulStop()
 
@@ -38,6 +39,6 @@ func RunServer(ctx context.Context, port string) error {
 	}()
 
 	// start gRPC server
-	log.Println("starting gRPC decode service server...")
+	log.Println("starting gRPC transform service server...")
 	return server.Serve(listen)
 }
