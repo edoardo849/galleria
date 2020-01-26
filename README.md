@@ -7,4 +7,5 @@ Apart from bulk image storage and retrieval Galleria provides a number of image 
 
 These capabilities are all delivered as a set of highperformance web-services that can operate on images provided as data in a request, operate on a remote image via a URL, or on images that are already in the repository. 
 
+## Features
 All of the processing features are able to operate in bulk, and at significant scale.
